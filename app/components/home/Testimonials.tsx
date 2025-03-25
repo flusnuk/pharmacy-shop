@@ -51,7 +51,7 @@ export default function Testimonials() {
       <Box
         sx={{
           display: 'flex',
-          gap: 2,
+          gap: 4,
           transition: 'transform 0.3s ease-in-out',
           mx: 'auto',
           width: '100%',
@@ -63,8 +63,8 @@ export default function Testimonials() {
             key={index}
             sx={{
               flex: 1,
-              maxWidth: isMobile ? '100%' : '350px',
-              minWidth: isMobile ? '100%' : '300px',
+              maxWidth: isMobile ? '100%' : '400px',
+              minWidth: isMobile ? '100%' : '350px',
               transform: `scale(${index === 1 ? 1.05 : 1})`,
               transition: 'transform 0.3s ease',
               '&:hover': {
