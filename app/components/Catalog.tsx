@@ -3,10 +3,7 @@
 import { useEffect, useState } from 'react'
 import { 
   Container, 
-  Grid, 
-  Card, 
-  CardMedia, 
-  CardContent, 
+  Grid,
   Typography,
   FormControl,
   InputLabel,
@@ -20,6 +17,7 @@ import {
 import { Medicine, Category } from '@/app/types/types'
 import { medicineService } from '@/app/services/medicineService'
 import { categoryService } from '@/app/services/categoryService'
+import MedicineCard from '@/app/components/MedicineCard'
 
 interface PaginationData {
   total: number;
@@ -38,7 +36,7 @@ export default function Catalog() {
     total: 0,
     pages: 1,
     currentPage: 1,
-    limit: 6
+    limit: 8
   })
 
   const fetchMedicines = async (page: number = 1) => {
@@ -90,9 +88,6 @@ export default function Catalog() {
     setPriceSort(sort)
   }
 
-  const formatPrice = (price: number | string) => {
-    return Number(price).toFixed(2)
-  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -138,29 +133,8 @@ export default function Catalog() {
           </Box>
         ) : (
           medicines.map((medicine) => (
-            <Grid item xs={12} sm={6} md={4} key={medicine.id}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={medicine.imageUrl || '/images/medicine-placeholder.jpg'}
-                  alt={medicine.name}
-                />
-                <CardContent>
-                  <Typography variant="h6" component="div">
-                    {medicine.name}
-                  </Typography>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ fontWeight: 'bold', mb: 1 }}
-                  >
-                    {formatPrice(medicine.price)} грн
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {medicine.description}
-                  </Typography>
-                </CardContent>
-              </Card>
+            <Grid item xs={12} sm={6} md={3} key={medicine.id}>
+              <MedicineCard medicine={medicine} />
             </Grid>
           ))
         )}

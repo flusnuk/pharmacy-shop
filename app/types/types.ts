@@ -27,6 +27,8 @@ export interface Medicine {
   manufacturer: string;
   isAvailable: boolean;
   createdAt: Date;
+  rating?: number;
+  reviewCount?: number;
 }
 
 export interface Order {
