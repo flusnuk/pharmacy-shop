@@ -1,0 +1,58 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Парацетамол",
+      "description": "Знеболювальний та жарознижувальний засіб",
+      "price": 45.99,
+      "category": "painkillers",
+      "image": "/images/products/paracetamol.jpg",
+      "inStock": true,
+      "isNew": false,
+      "discount": null,
+      "rating": 4.5,
+      "details": {
+        "manufacturer": "Фармак",
+        "dosage": "500 мг",
+        "quantity": "20 таблеток",
+        "prescription": false,
+        "activeIngredient": "Парацетамол",
+        "expiryDate": "2025-12-31",
+        "storageConditions": "Зберігати при температурі не вище 25°C"
+      },
+      "usage": {
+        "indications": "Головний біль, зубний біль, мігрень, лихоманка",
+        "contraindications": "Підвищена чутливість до компонентів препарату",
+        "sideEffects": "Можливі алергічні реакції",
+        "dosageInstructions": "1-2 таблетки до 4 разів на день"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Вітамін C",
+      "description": "Підтримка імунної системи",
+      "price": 89.99,
+      "category": "vitamins",
+      "image": "/images/products/vitamin-c.jpg",
+      "inStock": true,
+      "isNew": true,
+      "discount": 15,
+      "rating": 4.8,
+      "details": {
+        "manufacturer": "Київський вітамінний завод",
+        "dosage": "500 мг",
+        "quantity": "30 таблеток",
+        "prescription": false,
+        "activeIngredient": "Аскорбінова кислота",
+        "expiryDate": "2025-06-30",
+        "storageConditions": "Зберігати в сухому, захищеному від світла місці"
+      },
+      "usage": {
+        "indications": "Профілактика та лікування дефіциту вітаміну C",
+        "contraindications": "Індивідуальна непереносимість",
+        "sideEffects": "При тривалому застосуванні можливе подразнення шлунку",
+        "dosageInstructions": "1 таблетка 1-2 рази на день"
+      }
+    }
+  ]
+} 

@@ -1,0 +1,36 @@
+{
+  "orders": [
+    {
+      "id": "ORDER123456",
+      "date": "2024-03-15T14:30:00",
+      "status": "processing",
+      "customer": {
+        "firstName": "Іван",
+        "lastName": "Петренко",
+        "phone": "+380991234567",
+        "email": "ivan@example.com"
+      },
+      "delivery": {
+        "type": "nova",
+        "city": "Львів",
+        "address": "",
+        "department": "Відділення №1",
+        "cost": 0
+      },
+      "payment": {
+        "method": "card",
+        "status": "paid"
+      },
+      "items": [
+        {
+          "productId": 1,
+          "name": "Парацетамол",
+          "quantity": 2,
+          "price": 45.99,
+          "total": 91.98
+        }
+      ],
+      "totalAmount": 91.98
+    }
+  ]
+} 
