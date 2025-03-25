@@ -1,6 +1,6 @@
 "use client"
 
-import { Container, Typography, Box, Grid, Stack } from '@mui/material';
+import { Container, Typography, Box, Grid, Stack, useTheme } from '@mui/material';
 import { 
   Timeline,
   Biotech,
@@ -40,147 +40,195 @@ const stats = [
 ];
 
 export default function AboutPage() {
+  const theme = useTheme();
+
   return (
     <Box sx={{ bgcolor: 'grey.50' }}>
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        {/* Hero Section */}
-        <Box sx={{ 
-          position: 'relative', 
-          height: 400, 
-          borderRadius: 4,
-          overflow: 'hidden',
-          mb: 6 
-        }}>
-          <Image
-            src="/images/pharmacy-hero.jpg"
-            alt="Pharmacy"
-            fill
-            style={{ objectFit: 'cover' }}
-          />
-          <Box sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            bgcolor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            p: 4
+      <Box sx={{ 
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '50%',
+          height: '100%',
+          background: `linear-gradient(45deg, ${theme.palette.primary.light}20, ${theme.palette.secondary.light}20)`,
+          zIndex: 0
+        }
+      }}>
+        <Container maxWidth="lg" sx={{ py: 6 }}>
+          {/* Hero Section */}
+          <Box sx={{ 
+            position: 'relative', 
+            height: 500, 
+            borderRadius: 8,
+            overflow: 'hidden',
+            mb: 8,
+            boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+            transform: 'perspective(1000px) rotateY(-5deg)',
+            transition: 'transform 0.3s ease',
+            '&:hover': {
+              transform: 'perspective(1000px) rotateY(0deg)'
+            }
           }}>
-            <Stack spacing={2}>
-              <Typography variant="h3" color="white" fontWeight="bold">
-                Ваше здоров&apos;я - наш пріоритет
-              </Typography>
-              <Typography variant="h6" color="white">
-                Забезпечуємо якісними ліками та професійною підтримкою з 2014 року
-              </Typography>
-            </Stack>
-          </Box>
-        </Box>
-
-        {/* Stats Section */}
-        <Grid container spacing={3} sx={{ mb: 8 }}>
-          {stats.map((stat, index) => (
-            <Grid item xs={6} md={3} key={index}>
-              <Box sx={{ 
-                textAlign: 'center',
-                p: 3,
-                bgcolor: 'white',
-                borderRadius: 2
-              }}>
-                <Typography 
-                  variant="h3" 
-                  color="primary.main" 
-                  fontWeight="bold"
-                  gutterBottom
-                >
-                  {stat.number}
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                  {stat.label}
-                </Typography>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-
-        {/* Mission Section */}
-        <Box sx={{ mb: 8 }}>
-          <Typography variant="h4" gutterBottom align="center">
-            Наша місія
-          </Typography>
-          <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Box sx={{ 
-                position: 'relative',
-                height: 400,
-                borderRadius: 4,
-                overflow: 'hidden'
-              }}>
-                <Image
-                  src="/images/pharmacy-mission.jpg"
-                  alt="Our Mission"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
+            <Image
+              src="/images/pharmacy-hero.jpg"
+              alt="Pharmacy"
+              fill
+              style={{ objectFit: 'cover' }}
+            />
+            <Box sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(45deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              p: 4
+            }}>
               <Stack spacing={3}>
-                <Typography variant="h5" color="primary">
-                  Забезпечуємо здоров&apos;я нації
+                <Typography 
+                  variant="h2" 
+                  color="white" 
+                  fontWeight="bold"
+                  sx={{
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                    position: 'relative',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: -16,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 100,
+                      height: 4,
+                      background: theme.palette.secondary.main,
+                      borderRadius: 2
+                    }
+                  }}
+                >
+                  Ваше здоров`я - наш пріоритет
                 </Typography>
-                <Typography>
-                  Наша мета - зробити якісні ліки доступними для кожного українця. 
-                  Ми працюємо з провідними виробниками та забезпечуємо належні умови 
-                  зберігання всіх препаратів.
-                </Typography>
-                <Typography>
-                  Кожен член нашої команди - це кваліфікований спеціаліст, готовий 
-                  надати професійну консультацію та допомогти з вибором необхідних 
-                  препаратів.
+                <Typography 
+                  variant="h5" 
+                  color="white"
+                  sx={{ 
+                    opacity: 0.9,
+                    maxWidth: 800,
+                    margin: '0 auto'
+                  }}
+                >
+                  Забезпечуємо якісними ліками та професійною підтримкою з 2014 року
                 </Typography>
               </Stack>
-            </Grid>
-          </Grid>
-        </Box>
+            </Box>
+          </Box>
 
-        {/* Features Section */}
-        <Typography variant="h4" gutterBottom align="center" sx={{ mb: 4 }}>
-          Наші переваги
-        </Typography>
-        <Grid container spacing={4}>
-          {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Box sx={{ 
-                bgcolor: 'white',
-                p: 4,
-                borderRadius: 2,
-                height: '100%',
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-5px)'
-                }
-              }}>
-                <Stack spacing={2} alignItems="center" textAlign="center">
-                  <Box sx={{ color: 'primary.main' }}>
+          {/* Stats Section */}
+          <Grid container spacing={4} sx={{ mb: 8 }}>
+            {stats.map((stat, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Box
+                  sx={{
+                    p: 4,
+                    textAlign: 'center',
+                    bgcolor: 'white',
+                    borderRadius: 4,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                      bgcolor: theme.palette.primary.main,
+                      '& .stat-number, & .stat-label': {
+                        color: 'white'
+                      }
+                    }
+                  }}
+                >
+                  <Typography 
+                    className="stat-number"
+                    variant="h3" 
+                    color="primary"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
+                    {stat.number}
+                  </Typography>
+                  <Typography 
+                    className="stat-label"
+                    variant="h6"
+                    color="text.secondary"
+                  >
+                    {stat.label}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Features Section */}
+          <Grid container spacing={4}>
+            {features.map((feature, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Box
+                  sx={{
+                    p: 4,
+                    height: '100%',
+                    bgcolor: 'white',
+                    borderRadius: 4,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
+                      '&::before': {
+                        transform: 'scale(1.2)'
+                      },
+                      '& .feature-icon': {
+                        color: theme.palette.secondary.main,
+                        transform: 'scale(1.1)'
+                      }
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 4,
+                      background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                      transition: 'transform 0.3s ease'
+                    }
+                  }}
+                >
+                  <Box 
+                    className="feature-icon"
+                    sx={{ 
+                      color: theme.palette.primary.main,
+                      mb: 2,
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
                     {feature.icon}
                   </Box>
-                  <Typography variant="h6">
+                  <Typography variant="h6" gutterBottom>
                     {feature.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography color="text.secondary">
                     {feature.description}
                   </Typography>
-                </Stack>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
     </Box>
   );
 } 

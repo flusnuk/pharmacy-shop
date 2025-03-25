@@ -12,12 +12,14 @@ import {
   Box,
   Stack,
   Pagination,
-  Paper
+  Paper,
+  useTheme,
+  alpha
 } from '@mui/material'
 import { Medicine, Category } from '@/app/types/types'
 import { medicineService } from '@/app/services/medicineService'
 import { categoryService } from '@/app/services/categoryService'
-import MedicineCard from '@/app/components/MedicineCard'
+import ProductCard from './ProductCard'
 
 interface PaginationData {
   total: number;
@@ -27,6 +29,7 @@ interface PaginationData {
 }
 
 export default function Catalog() {
+  const theme = useTheme();
   const [medicines, setMedicines] = useState<Medicine[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -91,7 +94,26 @@ export default function Catalog() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 4 }}>
+      <Stack 
+        direction={{ xs: 'column', sm: 'row' }} 
+        spacing={2} 
+        sx={{ 
+          mb: 4,
+          '& .MuiFormControl-root': {
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              bgcolor: 'white',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: alpha(theme.palette.primary.main, 0.02),
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.primary.main,
+                }
+              }
+            }
+          }
+        }}
+      >
         <FormControl fullWidth>
           <InputLabel>Категорія</InputLabel>
           <Select
@@ -134,7 +156,19 @@ export default function Catalog() {
         ) : (
           medicines.map((medicine) => (
             <Grid item xs={12} sm={6} md={3} key={medicine.id}>
-              <MedicineCard medicine={medicine} />
+              <ProductCard
+                product={{
+                  id: medicine.id,
+                  name: medicine.name,
+                  category: categories.find(cat => cat.id === medicine.categoryId) || { id: 0, name: '' },
+                  price: medicine.price,
+                  imageUrl: medicine.imageUrl,
+                  isAvailable: medicine.isAvailable,
+                  description: medicine.description,
+                  manufacturer: medicine.manufacturer,
+                  stockQuantity: medicine.stockQuantity,
+                }}
+              />
             </Grid>
           ))
         )}
@@ -148,7 +182,7 @@ export default function Catalog() {
             justifyContent: 'center', 
             py: 4,
             mt: 4,
-            bgcolor: 'transparent' 
+            bgcolor: 'transparent',
           }}
         >
           <Pagination 
@@ -157,6 +191,23 @@ export default function Catalog() {
             onChange={handlePageChange}
             color="primary"
             size="large"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  transform: 'translateY(-2px)'
+                },
+                '&.Mui-selected': {
+                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: 'transparent',
+                    transform: 'translateY(-2px)'
+                  }
+                }
+              }
+            }}
           />
         </Paper>
       )}
