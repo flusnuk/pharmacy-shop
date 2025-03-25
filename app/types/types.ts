@@ -21,6 +21,7 @@ export interface Medicine {
   categoryId: number;
   name: string;
   description: string;
+  usage_instructions: string;
   price: number;
   stockQuantity: number;
   imageUrl: string;
