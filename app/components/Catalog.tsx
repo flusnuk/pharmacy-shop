@@ -1,135 +1,191 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from 'react'
 import { 
   Container, 
   Grid, 
   Card, 
+  CardMedia, 
   CardContent, 
-  CardActions, 
-  Button, 
   Typography,
-  Box
-} from "@mui/material";
-import { Medicine } from "../types/types";
-import { cartService } from "../services/cartService";
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Box,
+  Stack,
+  Pagination,
+  Paper
+} from '@mui/material'
+import { Medicine, Category } from '@/app/types/types'
+import { medicineService } from '@/app/services/medicineService'
+import { categoryService } from '@/app/services/categoryService'
 
-const medicines: Medicine[] = [
-  {
-    id: 1, 
-    name: "Парацетамол", 
-    price: 50, 
-    description: "Знеболюючий препарат",
-    image: "/images/paracetamol.jpg",
-    category: "Знеболюючі",
-    inStock: true
-  },
-  { 
-    id: 2, 
-    name: "Ібупрофен", 
-    price: 80, 
-    description: "Протизапальний засіб",
-    image: "/images/ibuprofen.jpg",
-    category: "Протизапальні",
-    inStock: true
-  },
-  { 
-    id: 3, 
-    name: "Но-шпа", 
-    price: 60, 
-    description: "Спазмолітик",
-    image: "/images/no-spa.jpg",
-    category: "Спазмолітики",
-    inStock: true
-  },
-  // Add more medicines here
-];
+interface PaginationData {
+  total: number;
+  pages: number;
+  currentPage: number;
+  limit: number;
+}
 
 export default function Catalog() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [medicines, setMedicines] = useState<Medicine[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [priceSort, setPriceSort] = useState<'none' | 'asc' | 'desc'>('none')
+  const [loading, setLoading] = useState(true)
+  const [pagination, setPagination] = useState<PaginationData>({
+    total: 0,
+    pages: 1,
+    currentPage: 1,
+    limit: 6
+  })
 
-  const addToCart = (medicine: Medicine) => {
-    cartService.addItem(medicine);
-    // Dispatch a storage event to update the navbar cart count
-    window.dispatchEvent(new Event('storage'));
-  };
+  const fetchMedicines = async (page: number = 1) => {
+    setLoading(true)
+    try {
+      const filters = {
+        category: selectedCategory,
+        sortPrice: priceSort === 'none' ? undefined : priceSort,
+        page,
+        limit: pagination.limit
+      }
+      const data = await medicineService.fetchMedicines(filters)
+      setMedicines(data.medicines)
+      setPagination(data.pagination)
+    } catch (error) {
+      console.error('Error fetching medicines:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  const filteredMedicines = selectedCategory === "all" 
-    ? medicines 
-    : medicines.filter(med => med.category === selectedCategory);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoriesData = await categoryService.fetchCategories()
+        setCategories(categoriesData)
+        await fetchMedicines()
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
 
-  const categories = ["all", ...new Set(medicines.map(med => med.category))];
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    fetchMedicines(1) // Reset to first page when filters change
+  }, [selectedCategory, priceSort])
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    fetchMedicines(page)
+  }
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId)
+  }
+
+  const handlePriceSortChange = (sort: 'none' | 'asc' | 'desc') => {
+    setPriceSort(sort)
+  }
+
+  const formatPrice = (price: number | string) => {
+    return Number(price).toFixed(2)
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" sx={{ mb: 4, fontWeight: 'bold' }}>
-        Каталог ліків
-      </Typography>
-
-      <Box sx={{ mb: 4 }}>
-        {categories.map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? "contained" : "outlined"}
-            onClick={() => setSelectedCategory(category)}
-            sx={{ mr: 1, mb: 1 }}
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 4 }}>
+        <FormControl fullWidth>
+          <InputLabel>Категорія</InputLabel>
+          <Select
+            value={selectedCategory}
+            label="Категорія"
+            onChange={(e) => handleCategoryChange(e.target.value)}
           >
-            {category === "all" ? "Всі" : category}
-          </Button>
-        ))}
-      </Box>
+            <MenuItem value="all">Всі категорії</MenuItem>
+            {categories.map((category) => (
+              <MenuItem key={category.id} value={category.id.toString()}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-      <Grid container spacing={3}>
-        {filteredMedicines.map((med) => (
-          <Grid item xs={12} sm={6} md={4} key={med.id}>
-            <Card 
-              sx={{ 
-                height: '100%', 
-                display: 'flex', 
-                flexDirection: 'column',
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 3
-                }
-              }}
-            >
-              <Box 
-                sx={{
-                  height: 200,
-                  backgroundImage: `url(${med.image})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
-              />
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" gutterBottom>{med.name}</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {med.description}
-                </Typography>
-                <Typography 
-                  variant="h6" 
-                  color="primary" 
-                  sx={{ fontWeight: 'bold' }}
-                >
-                  {med.price} грн
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  fullWidth
-                  onClick={() => addToCart(med)}
-                  disabled={!med.inStock}
-                >
-                  {med.inStock ? 'Додати в кошик' : 'Немає в наявності'}
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
+        <FormControl fullWidth>
+          <InputLabel>Сортування за ціною</InputLabel>
+          <Select
+            value={priceSort}
+            label="Сортування за ціною"
+            onChange={(e) => handlePriceSortChange(e.target.value as 'none' | 'asc' | 'desc')}
+          >
+            <MenuItem value="none">Без сортування</MenuItem>
+            <MenuItem value="asc">Від дешевших до дорожчих</MenuItem>
+            <MenuItem value="desc">Від дорожчих до дешевших</MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
+
+      <Grid container spacing={4}>
+        {loading ? (
+          <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+            <Typography>Завантаження...</Typography>
+          </Box>
+        ) : medicines.length === 0 ? (
+          <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
+            <Typography>Ліки не знайдено</Typography>
+          </Box>
+        ) : (
+          medicines.map((medicine) => (
+            <Grid item xs={12} sm={6} md={4} key={medicine.id}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={medicine.imageUrl || '/images/medicine-placeholder.jpg'}
+                  alt={medicine.name}
+                />
+                <CardContent>
+                  <Typography variant="h6" component="div">
+                    {medicine.name}
+                  </Typography>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ fontWeight: 'bold', mb: 1 }}
+                  >
+                    {formatPrice(medicine.price)} грн
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {medicine.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        )}
       </Grid>
+
+      {pagination.pages > 1 && (
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            py: 4,
+            mt: 4,
+            bgcolor: 'transparent' 
+          }}
+        >
+          <Pagination 
+            count={pagination.pages}
+            page={pagination.currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size="large"
+          />
+        </Paper>
+      )}
     </Container>
-  );
+  )
 }
