@@ -40,6 +40,10 @@ interface CartModalProps {
   onUpdateQuantity: (medicineId: number, quantity: number) => void;
 }
 
+// Додайте константу для вартості доставки
+const DELIVERY_COST = 140;
+const FREE_DELIVERY_THRESHOLD = 1000;
+
 export default function CartModal({ 
   open, 
   onClose, 
@@ -49,7 +53,9 @@ export default function CartModal({
 }: CartModalProps) {
   const router = useRouter();
   const theme = useTheme();
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0);
+  const subtotalPrice = cartItems.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0);
+  const deliveryCost = subtotalPrice >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_COST;
+  const totalPrice = subtotalPrice + deliveryCost;
 
   return (
     <Modal
@@ -313,9 +319,9 @@ export default function CartModal({
                 >
                   <LocalShipping />
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {totalPrice >= 1000 
+                    {subtotalPrice >= FREE_DELIVERY_THRESHOLD 
                       ? 'Безкоштовна доставка доступна для вашого замовлення'
-                      : `Додайте товарів ще на ${1000 - totalPrice} грн для безкоштовної доставки`}
+                      : `Додайте товарів ще на ${FREE_DELIVERY_THRESHOLD - subtotalPrice} грн для безкоштовної доставки`}
                   </Typography>
                 </Paper>
               </>
@@ -336,12 +342,22 @@ export default function CartModal({
                   justifyContent: 'space-between', 
                   alignItems: 'center' 
                 }}>
-                  <Typography variant="h6">Загальна сума:</Typography>
-                  <Typography 
-                    variant="h5" 
-                    color="primary.main" 
-                    sx={{ fontWeight: 700 }}
-                  >
+                  <Stack spacing={1}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', minWidth: 200 }}>
+                      <Typography color="text.secondary">Товари:</Typography>
+                      <Typography>{subtotalPrice} грн</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', minWidth: 200 }}>
+                      <Typography color="text.secondary">Доставка:</Typography>
+                      <Typography>
+                        {deliveryCost === 0 
+                          ? <span style={{ color: theme.palette.success.main }}>Безкоштовно</span>
+                          : `${deliveryCost} грн`
+                        }
+                      </Typography>
+                    </Box>
+                  </Stack>
+                  <Typography variant="h5" color="primary.main" sx={{ fontWeight: 700 }}>
                     {totalPrice} грн
                   </Typography>
                 </Box>

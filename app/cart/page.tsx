@@ -42,6 +42,9 @@ import { useRouter } from 'next/navigation';
 import OrderSuccessModal from '../components/OrderSuccessModal';
 import { getImageUrl } from '../utils/imageUtils';
 
+const DELIVERY_COST = 140;
+const FREE_DELIVERY_THRESHOLD = 1000;
+
 const steps = ['Кошик', 'Доставка', 'Оплата', 'Підтвердження'];
 
 interface DeliveryForm {
@@ -101,7 +104,9 @@ export default function CartPage() {
     setCartItems(updatedCart);
   };
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0);
+  const subtotalPrice = cartItems.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0);
+  const deliveryCost = subtotalPrice >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_COST;
+  const totalPrice = subtotalPrice + deliveryCost;
 
   const handleDeliveryFormChange = (field: keyof DeliveryForm) => (
     event: React.ChangeEvent<HTMLInputElement | { value: unknown }>
@@ -301,11 +306,13 @@ export default function CartPage() {
           <Stack spacing={2}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography>Товари ({cartItems.length})</Typography>
-              <Typography>{totalPrice} грн</Typography>
+              <Typography>{subtotalPrice} грн</Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography>Доставка</Typography>
-              <Typography color="success.main">Безкоштовно</Typography>
+              <Typography color={deliveryCost === 0 ? "success.main" : "text.primary"}>
+                {deliveryCost === 0 ? "Безкоштовно" : `${deliveryCost} грн`}
+              </Typography>
             </Box>
             <Divider />
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -408,11 +415,13 @@ export default function CartPage() {
           <Stack spacing={2}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography>Товари ({cartItems.length})</Typography>
-              <Typography>{totalPrice} грн</Typography>
+              <Typography>{subtotalPrice} грн</Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography>Доставка</Typography>
-              <Typography color="success.main">Безкоштовно</Typography>
+              <Typography color={deliveryCost === 0 ? "success.main" : "text.primary"}>
+                {deliveryCost === 0 ? "Безкоштовно" : `${deliveryCost} грн`}
+              </Typography>
             </Box>
             <Divider />
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -517,11 +526,13 @@ export default function CartPage() {
           <Stack spacing={2}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography>Товари ({cartItems.length})</Typography>
-              <Typography>{totalPrice} грн</Typography>
+              <Typography>{subtotalPrice} грн</Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography>Доставка</Typography>
-              <Typography color="success.main">Безкоштовно</Typography>
+              <Typography color={deliveryCost === 0 ? "success.main" : "text.primary"}>
+                {deliveryCost === 0 ? "Безкоштовно" : `${deliveryCost} грн`}
+              </Typography>
             </Box>
             <Divider />
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -687,9 +698,9 @@ export default function CartPage() {
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <LocalShipping />
                   <Typography>
-                    {totalPrice >= 1000 
+                    {subtotalPrice >= 1000 
                       ? 'Безкоштовна доставка доступна для вашого замовлення' 
-                      : `Додайте товарів ще на ${1000 - totalPrice} грн для безкоштовної доставки`}
+                      : `Додайте товарів ще на ${1000 - subtotalPrice} грн для безкоштовної доставки`}
                   </Typography>
                 </Stack>
               </Paper>
@@ -705,11 +716,13 @@ export default function CartPage() {
                 <Stack spacing={2}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography>Товари ({cartItems.length})</Typography>
-                    <Typography>{totalPrice} грн</Typography>
+                    <Typography>{subtotalPrice} грн</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography>Доставка</Typography>
-                    <Typography color="success.main">Безкоштовно</Typography>
+                    <Typography color={deliveryCost === 0 ? "success.main" : "text.primary"}>
+                      {deliveryCost === 0 ? "Безкоштовно" : `${deliveryCost} грн`}
+                    </Typography>
                   </Box>
                   <Divider />
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
