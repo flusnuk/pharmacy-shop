@@ -40,6 +40,7 @@ import CreditCardForm from '../components/CreditCardForm';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import OrderSuccessModal from '../components/OrderSuccessModal';
+import { getImageUrl } from '../utils/imageUtils';
 
 const steps = ['Кошик', 'Доставка', 'Оплата', 'Підтвердження'];
 
@@ -619,6 +620,24 @@ export default function CartPage() {
                       sx={{ p: 2 }}
                     >
                       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+                        <Box sx={{ 
+                          position: 'relative',
+                          width: { xs: '100%', sm: 120 },
+                          height: { xs: 120, sm: 120 },
+                          borderRadius: 1,
+                          overflow: 'hidden',
+                          bgcolor: 'grey.100'
+                        }}>
+                          <Image
+                            src={getImageUrl(item.medicine.imageUrl)}
+                            alt={item.medicine.name}
+                            fill
+                            style={{ objectFit: 'contain' }}
+                            sizes="(max-width: 768px) 100vw, 120px"
+                            priority={false}
+                            quality={75}
+                          />
+                        </Box>
                         <Box sx={{ flexGrow: 1 }}>
                           <Stack direction="row" alignItems="center" spacing={1}>
                             <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
