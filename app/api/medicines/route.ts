@@ -7,6 +7,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const categoryId = searchParams.get('category')
     const sortPrice = searchParams.get('sortPrice')
+    const searchQuery = searchParams.get('search')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '6')
     
@@ -36,6 +37,17 @@ export async function GET(request: Request) {
     // Додаємо фільтр по категорії
     if (categoryId && categoryId !== 'all') {
       query.where!.categoryId = parseInt(categoryId)
+    }
+
+    // Додаємо пошук за назвою
+    if (searchQuery && searchQuery.trim() !== '') {
+      query.where = {
+        ...query.where,
+        name: {
+          contains: searchQuery,
+          mode: 'insensitive'
+        }
+      }
     }
 
     // Додаємо сортування за ціною

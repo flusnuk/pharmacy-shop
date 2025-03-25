@@ -70,6 +70,7 @@ export interface CartItem {
 export interface MedicineFilters {
   category?: string;
   sortPrice?: 'asc' | 'desc';
+  search?: string;
   page?: number;
   limit?: number;
 } 

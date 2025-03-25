@@ -25,6 +25,10 @@ export const medicineService = {
         params.append('sortPrice', filters.sortPrice)
       }
 
+      if (filters?.search && filters.search.trim() !== '') {
+        params.append('search', filters.search)
+      }
+
       if (filters?.page) {
         params.append('page', filters.page.toString())
       }

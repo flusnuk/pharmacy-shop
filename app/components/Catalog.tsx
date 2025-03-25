@@ -12,14 +12,17 @@ import {
   Box,
   Stack,
   Pagination,
-  Paper,
   useTheme,
-  alpha
+  alpha,
+  TextField,
+  InputAdornment,
+  IconButton
 } from '@mui/material'
 import { Medicine, Category } from '@/app/types/types'
 import { medicineService } from '@/app/services/medicineService'
 import { categoryService } from '@/app/services/categoryService'
 import ProductCard from './ProductCard'
+import { Search, Clear } from '@mui/icons-material'
 
 interface PaginationData {
   total: number;
@@ -34,6 +37,7 @@ export default function Catalog() {
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [priceSort, setPriceSort] = useState<'none' | 'asc' | 'desc'>('none')
+  const [searchQuery, setSearchQuery] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [pagination, setPagination] = useState<PaginationData>({
     total: 0,
@@ -48,6 +52,7 @@ export default function Catalog() {
       const filters = {
         category: selectedCategory,
         sortPrice: priceSort === 'none' ? undefined : priceSort,
+        search: searchQuery,
         page,
         limit: pagination.limit
       }
@@ -77,7 +82,7 @@ export default function Catalog() {
 
   useEffect(() => {
     fetchMedicines(1) // Reset to first page when filters change
-  }, [selectedCategory, priceSort])
+  }, [selectedCategory, priceSort, searchQuery])
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     fetchMedicines(page)
@@ -91,9 +96,50 @@ export default function Catalog() {
     setPriceSort(sort)
   }
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value)
+  }
+
+  const handleClearSearch = () => {
+    setSearchQuery('')
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <TextField
+          fullWidth
+          placeholder="Пошук ліків..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+            endAdornment: searchQuery && (
+              <InputAdornment position="end">
+                <IconButton onClick={handleClearSearch} size="small">
+                  <Clear />
+                </IconButton>
+              </InputAdornment>
+            ),
+            sx: {
+              borderRadius: 2,
+              bgcolor: 'white',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: alpha(theme.palette.primary.main, 0.02),
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.primary.main,
+                }
+              }
+            }
+          }}
+        />
+      </Box>
+
       <Stack 
         direction={{ xs: 'column', sm: 'row' }} 
         spacing={2} 
@@ -144,6 +190,16 @@ export default function Catalog() {
         </FormControl>
       </Stack>
 
+      {searchQuery && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6">
+            {pagination.total > 0 
+              ? `Знайдено ${pagination.total} результатів для "${searchQuery}"` 
+              : `Нічого не знайдено для "${searchQuery}"`}
+          </Typography>
+        </Box>
+      )}
+
       <Grid container spacing={4}>
         {loading ? (
           <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
@@ -175,41 +231,20 @@ export default function Catalog() {
       </Grid>
 
       {pagination.pages > 1 && (
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            py: 4,
-            mt: 4,
-            bgcolor: 'transparent',
-          }}
-        >
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <Pagination 
-            count={pagination.pages}
-            page={pagination.currentPage}
+            count={pagination.pages} 
+            page={pagination.currentPage} 
             onChange={handlePageChange}
             color="primary"
             size="large"
             sx={{
               '& .MuiPaginationItem-root': {
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                  transform: 'translateY(-2px)'
-                },
-                '&.Mui-selected': {
-                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  color: 'white',
-                  '&:hover': {
-                    bgcolor: 'transparent',
-                    transform: 'translateY(-2px)'
-                  }
-                }
+                borderRadius: 2,
               }
             }}
           />
-        </Paper>
+        </Box>
       )}
     </Container>
   )
