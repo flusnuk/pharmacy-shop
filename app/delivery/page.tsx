@@ -1,15 +1,33 @@
 "use client"
 
-import { Container, Typography, Box, Grid, Stack } from '@mui/material';
+import { 
+  Container, 
+  Typography, 
+  Box, 
+  Grid, 
+  Stack,
+  Paper,
+  Card,
+  CardContent,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Alert
+} from '@mui/material';
 import { 
   LocalShipping, 
   AccessTime, 
   Payment, 
-  Info,
   LocationOn,
   LocalPharmacy,
   Medication,
-  HealthAndSafety
+  HealthAndSafety,
+  CheckCircle,
+  DirectionsCar,
+  Euro,
+  Schedule
 } from '@mui/icons-material';
 
 const deliveryInfo = [
@@ -40,44 +58,59 @@ const deliveryInfo = [
       "Стандартна доставка - 140 грн",
       "Кур'єрська доставка в межах міста - 140 грн"
     ]
-  },
-  {
-    icon: <Info sx={{ fontSize: 40 }} />,
-    title: "Важлива інформація",
-    items: [
-      "Доставка ліків здійснюється в спеціальній упаковці",
-      "Температурний режим дотримується",
-      "Можливість відстеження замовлення"
-    ]
   }
 ];
 
 const benefits = [
   {
-    icon: <HealthAndSafety />,
+    icon: <HealthAndSafety sx={{ fontSize: 40 }} />,
     title: "Безпечне транспортування",
     description: "Спеціальні термоконтейнери для збереження якості ліків"
   },
   {
-    icon: <Medication />,
+    icon: <Medication sx={{ fontSize: 40 }} />,
     title: "Швидка доставка",
     description: "Термінова доставка життєво важливих препаратів"
   },
   {
-    icon: <LocalPharmacy />,
+    icon: <LocalPharmacy sx={{ fontSize: 40 }} />,
     title: "Професійна упаковка",
     description: "Захист від пошкоджень та зовнішніх факторів"
   },
   {
-    icon: <LocationOn />,
+    icon: <LocationOn sx={{ fontSize: 40 }} />,
     title: "Широке покриття",
     description: "Доставка у всі регіони України"
+  }
+];
+
+const steps = [
+  {
+    icon: <Schedule color="primary" />,
+    title: "Оформлення замовлення",
+    description: "Оберіть необхідні ліки та спосіб доставки"
+  },
+  {
+    icon: <DirectionsCar color="primary" />,
+    title: "Підготовка і відправка",
+    description: "Ми дбайливо упакуємо та відправимо ваше замовлення"
+  },
+  {
+    icon: <Euro color="primary" />,
+    title: "Оплата",
+    description: "Оплатіть замовлення зручним для вас способом"
+  },
+  {
+    icon: <LocalPharmacy color="primary" />,
+    title: "Отримання",
+    description: "Заберіть своє замовлення у зручний час"
   }
 ];
 
 export default function DeliveryPage() {
   return (
     <Box sx={{ bgcolor: 'grey.50' }}>
+      {/* Hero Section */}
       <Box sx={{ 
         position: 'relative', 
         height: 300,
@@ -108,75 +141,133 @@ export default function DeliveryPage() {
         </Container>
       </Box>
 
-      <Container maxWidth="lg" sx={{ pb: 8 }}>
-        {/* Benefits */}
-        <Grid container spacing={4} sx={{ mb: 8 }}>
-          {benefits.map((benefit, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Box sx={{ 
-                bgcolor: 'white',
-                p: 3,
-                borderRadius: 2,
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        {/* Delivery Steps */}
+        <Box sx={{ mb: 8 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Як це працює
+          </Typography>
+          <Grid container spacing={4} sx={{ mt: 2 }}>
+            {steps.map((step, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Paper 
+                  elevation={0}
+                  sx={{ 
+                    p: 3,
+                    height: '100%',
+                    textAlign: 'center',
+                    border: '1px solid',
+                    borderColor: 'grey.200',
+                    transition: 'transform 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-5px)'
+                    }
+                  }}
+                >
+                  <Box sx={{ mb: 2 }}>
+                    {step.icon}
+                  </Box>
+                  <Typography variant="h6" gutterBottom>
+                    {step.title}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    {step.description}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* Delivery Info */}
+        <Grid container spacing={4}>
+          {deliveryInfo.map((section, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <Card sx={{ 
                 height: '100%',
-                textAlign: 'center',
                 transition: 'transform 0.2s',
                 '&:hover': {
                   transform: 'translateY(-5px)'
                 }
               }}>
-                <Box sx={{ color: 'primary.main', mb: 2 }}>
-                  {benefit.icon}
-                </Box>
-                <Typography variant="h6" gutterBottom>
-                  {benefit.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {benefit.description}
-                </Typography>
-              </Box>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: 'primary.main' }}>
+                    {section.icon}
+                    <Typography variant="h6" sx={{ ml: 2 }}>
+                      {section.title}
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ mb: 2 }} />
+                  <List>
+                    {section.items.map((item, idx) => (
+                      <ListItem key={idx} sx={{ px: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 36 }}>
+                          <CheckCircle color="primary" fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary={item} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </CardContent>
+              </Card>
             </Grid>
           ))}
         </Grid>
 
-        {/* Delivery Info */}
-        <Grid container spacing={4}>
-          {deliveryInfo.map((section, index) => (
-            <Grid item xs={12} md={6} key={index}>
-              <Box sx={{ 
-                bgcolor: 'white',
-                p: 4,
-                borderRadius: 2,
-                height: '100%'
-              }}>
-                <Stack spacing={3}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ color: 'primary.main' }}>
-                      {section.icon}
-                    </Box>
-                    <Typography variant="h6">
-                      {section.title}
-                    </Typography>
+        {/* Benefits Section */}
+        <Box sx={{ mt: 8 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Наші переваги
+          </Typography>
+          <Grid container spacing={4} sx={{ mt: 2 }}>
+            {benefits.map((benefit, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Paper sx={{ 
+                  p: 3,
+                  height: '100%',
+                  textAlign: 'center',
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-5px)'
+                  }
+                }}>
+                  <Box sx={{ color: 'primary.main', mb: 2 }}>
+                    {benefit.icon}
                   </Box>
-                  <Stack spacing={2}>
-                    {section.items.map((item, idx) => (
-                      <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box sx={{ 
-                          width: 8, 
-                          height: 8, 
-                          borderRadius: '50%', 
-                          bgcolor: 'primary.main' 
-                        }} />
-                        <Typography>
-                          {item}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Stack>
-                </Stack>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
+                  <Typography variant="h6" gutterBottom>
+                    {benefit.title}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    {benefit.description}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* Important Notice */}
+        <Alert 
+          severity="info" 
+          sx={{ 
+            mt: 8,
+            display: 'flex',
+            alignItems: 'center',
+            '& .MuiAlert-icon': {
+              fontSize: 40
+            }
+          }}
+        >
+          <Stack spacing={1}>
+            <Typography variant="h6">
+              Важлива інформація
+            </Typography>
+            <Typography>
+              Доставка термолабільних препаратів здійснюється в спеціальних термоконтейнерах, 
+              що забезпечують необхідний температурний режим протягом усього шляху
+            </Typography>
+          </Stack>
+        </Alert>
       </Container>
     </Box>
   );
