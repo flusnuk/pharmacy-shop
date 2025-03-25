@@ -57,21 +57,42 @@ export default function Navbar() {
       setCart(cartService.getCart());
     };
 
+    // Initial cart update
     updateCart();
+
+    // Listen for cart updates from other components
+    window.addEventListener('cartUpdated', updateCart);
+    // Listen for localStorage changes (for cross-tab sync)
     window.addEventListener('storage', updateCart);
-    return () => window.removeEventListener('storage', updateCart);
+
+    return () => {
+      window.removeEventListener('cartUpdated', updateCart);
+      window.removeEventListener('storage', updateCart);
+    };
   }, []);
 
   const removeFromCart = (medicineId: number) => {
-    const updatedCart = cartService.removeItem(medicineId);
-    setCart(updatedCart);
-    setCartCount(cartService.getTotalItems());
+    try {
+      const updatedCart = cartService.removeItem(medicineId);
+      setCart(updatedCart);
+      setCartCount(cartService.getTotalItems());
+      // Trigger cart update event for other components
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+    }
   };
 
   const updateQuantity = (medicineId: number, quantity: number) => {
-    const updatedCart = cartService.updateQuantity(medicineId, quantity);
-    setCart(updatedCart);
-    setCartCount(cartService.getTotalItems());
+    try {
+      const updatedCart = cartService.updateQuantity(medicineId, quantity);
+      setCart(updatedCart);
+      setCartCount(cartService.getTotalItems());
+      // Trigger cart update event for other components
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (error) {
+      console.error('Error updating cart quantity:', error);
+    }
   };
 
   const isActive = (path: string) => pathname === path;

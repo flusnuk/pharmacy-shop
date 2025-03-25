@@ -15,15 +15,32 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Medicine } from '@/app/types/types'
+import { cartService } from '@/app/services/cartService'
+import { useState } from 'react'
 
 interface MedicineCardProps {
   medicine: Medicine;
 }
 
 export default function MedicineCard({ medicine }: MedicineCardProps) {
+  const [isAdding, setIsAdding] = useState(false);
+
   const formatPrice = (price: number | string) => {
     return Number(price).toFixed(2)
   }
+
+  const handleAddToCart = () => {
+    setIsAdding(true);
+    try {
+      cartService.addItem(medicine);
+      // Trigger custom event to update cart count in navbar
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <Card 
@@ -273,7 +290,8 @@ export default function MedicineCard({ medicine }: MedicineCardProps) {
                 <Button 
                   variant="contained" 
                   color="primary"
-                  disabled={!medicine.isAvailable}
+                  disabled={!medicine.isAvailable || isAdding}
+                  onClick={handleAddToCart}
                   sx={{ 
                     minWidth: 'auto',
                     width: '36px',

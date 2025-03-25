@@ -5,57 +5,98 @@ const CART_STORAGE_KEY = 'pharmacy_cart';
 export const cartService = {
   getCart: (): CartItem[] => {
     if (typeof window === 'undefined') return [];
-    const cart = localStorage.getItem(CART_STORAGE_KEY);
-    return cart ? JSON.parse(cart) : [];
+    try {
+      const cart = localStorage.getItem(CART_STORAGE_KEY);
+      return cart ? JSON.parse(cart) : [];
+    } catch (error) {
+      console.error('Error getting cart:', error);
+      return [];
+    }
   },
 
   setCart: (cart: CartItem[]) => {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch (error) {
+      console.error('Error setting cart:', error);
+    }
   },
 
   addItem: (medicine: Medicine) => {
-    const cart = cartService.getCart();
-    const existingItem = cart.find(item => item.medicine.id === medicine.id);
+    try {
+      const cart = cartService.getCart();
+      const existingItem = cart.find(item => item.medicine.id === medicine.id);
 
-    if (existingItem) {
-      existingItem.quantity += 1;
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({ medicine, quantity: 1 });
+      }
+
       cartService.setCart(cart);
-    } else {
-      cart.push({ medicine, quantity: 1 });
-      cartService.setCart(cart);
+      return cart;
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+      throw error;
     }
-    return cart;
   },
 
   removeItem: (medicineId: number) => {
-    const cart = cartService.getCart();
-    const updatedCart = cart.filter(item => item.medicine.id !== medicineId);
-    cartService.setCart(updatedCart);
-    return updatedCart;
+    try {
+      const cart = cartService.getCart();
+      const updatedCart = cart.filter(item => item.medicine.id !== medicineId);
+      cartService.setCart(updatedCart);
+      return updatedCart;
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+      throw error;
+    }
   },
 
   updateQuantity: (medicineId: number, quantity: number) => {
-    const cart = cartService.getCart();
-    const item = cart.find(item => item.medicine.id === medicineId);
-    if (item) {
-      item.quantity = Math.max(0, quantity);
-      if (item.quantity === 0) {
-        return cartService.removeItem(medicineId);
+    try {
+      const cart = cartService.getCart();
+      const item = cart.find(item => item.medicine.id === medicineId);
+      
+      if (item) {
+        if (quantity <= 0) {
+          return cartService.removeItem(medicineId);
+        }
+        item.quantity = quantity;
+        cartService.setCart(cart);
       }
-      cartService.setCart(cart);
+      
+      return cart;
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      throw error;
     }
-    return cart;
   },
 
   clearCart: () => {
-    localStorage.removeItem(CART_STORAGE_KEY);
+    try {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    }
   },
 
   getTotalItems: (): number => {
-    return cartService.getCart().reduce((sum, item) => sum + item.quantity, 0);
+    try {
+      return cartService.getCart().reduce((sum, item) => sum + item.quantity, 0);
+    } catch (error) {
+      console.error('Error getting total items:', error);
+      return 0;
+    }
   },
 
   getTotalPrice: (): number => {
-    return cartService.getCart().reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0);
+    try {
+      return cartService.getCart().reduce((sum, item) => 
+        sum + (item.medicine.price * item.quantity), 0);
+    } catch (error) {
+      console.error('Error getting total price:', error);
+      return 0;
+    }
   }
 }; 
