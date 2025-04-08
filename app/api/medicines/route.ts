@@ -18,16 +18,6 @@ export async function GET(request: Request) {
       where: {},
       include: {
         category: true,
-        reviews: {
-          include: {
-            user: {
-              select: {
-                firstName: true,
-                lastName: true
-              }
-            }
-          }
-        }
       },
       orderBy: {},
       skip,

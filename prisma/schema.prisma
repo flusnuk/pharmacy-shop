@@ -22,27 +22,6 @@ model Order {
   @@map("orders")
 }
 
-model Review {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  medicineId Int      @map("medicine_id")
-  rating     Int
-  comment    String
-  createdAt  DateTime @default(now()) @map("created_at")
-  user       User     @relation(fields: [userId], references: [id])
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
-
-  @@map("reviews")
-}
-
-model Role {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
-  description String
-  users       User[]
-
-  @@map("roles")
-}
 
 model User {
   id          Int         @id @default(autoincrement())
@@ -53,10 +32,7 @@ model User {
   phone       String
   address     String
   telegramId  String?    @unique @map("telegram_id")
-  roleId      Int        @map("role_id")
   createdAt   DateTime    @default(now()) @map("created_at")
-  role        Role        @relation(fields: [roleId], references: [id])
-  reviews     Review[]
   userOrders  UserOrder[]
 
   @@map("users")
@@ -86,7 +62,6 @@ model Medicine {
   usageInstructions String  @map("usage_instructions")
   createdAt        DateTime @default(now()) @map("created_at")
   category         Category @relation(fields: [categoryId], references: [id])
-  reviews          Review[]
 
   @@map("medicines")
 }
