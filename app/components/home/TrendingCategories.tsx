@@ -8,23 +8,23 @@ const trendingCategories = [
   {
     title: "Противірусні препарати",
     image: "/images/categories/antiviral.jpg",
-    link: "/catalog/antiviral"
-  },
-  {
-    title: "Вітаміни та добавки",
-    image: "/images/categories/vitamins.jpg",
-    link: "/catalog/vitamins"
+    link: "/catalog"
   },
   {
     title: "Знеболюючі засоби",
     image: "/images/categories/painkillers.jpg",
-    link: "/catalog/painkillers"
+    link: "/catalog"
   },
   {
     title: "Засоби гігієни",
     image: "/images/categories/hygiene.jpg",
-    link: "/catalog/hygiene"
-  }
+    link: "/catalog"
+  },
+  {
+    title: "Вітаміни та добавки",
+    image: "/images/categories/vitamins.jpg",
+    link: "/catalog"
+  },
 ];
 
 export default function TrendingCategories() {

@@ -10,11 +10,13 @@ import {
   IconButton,
   Badge,
   useScrollTrigger,
-  Slide
+  Slide,
+  InputBase,
+  alpha
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShoppingCart as ShoppingCartIcon, LocalPharmacy } from '@mui/icons-material';
+import { ShoppingCart as ShoppingCartIcon, Search as SearchIcon } from '@mui/icons-material';
 import { cartService } from '../services/cartService';
 import { useEffect, useState } from 'react';
 import CartModal from './CartModal';
@@ -57,12 +59,8 @@ export default function Navbar() {
       setCart(cartService.getCart());
     };
 
-    // Initial cart update
     updateCart();
-
-    // Listen for cart updates from other components
     window.addEventListener('cartUpdated', updateCart);
-    // Listen for localStorage changes (for cross-tab sync)
     window.addEventListener('storage', updateCart);
 
     return () => {
@@ -76,7 +74,6 @@ export default function Navbar() {
       const updatedCart = cartService.removeItem(medicineId);
       setCart(updatedCart);
       setCartCount(cartService.getTotalItems());
-      // Trigger cart update event for other components
       window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
       console.error('Error removing item from cart:', error);
@@ -88,7 +85,6 @@ export default function Navbar() {
       const updatedCart = cartService.updateQuantity(medicineId, quantity);
       setCart(updatedCart);
       setCartCount(cartService.getTotalItems());
-      // Trigger cart update event for other components
       window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
       console.error('Error updating cart quantity:', error);
@@ -108,7 +104,6 @@ export default function Navbar() {
             bgcolor: 'background.paper',
             borderBottom: '1px solid',
             borderColor: 'divider',
-            zIndex: (theme) => theme.zIndex.drawer + 1 
           }}
         >
           <Container maxWidth="lg">
@@ -120,49 +115,90 @@ export default function Navbar() {
                   display: 'flex', 
                   alignItems: 'center', 
                   textDecoration: 'none',
-                  color: 'primary.main',
+                  color: '#0ea5e9',
                 }}
               >
-                <LocalPharmacy sx={{ fontSize: 32, mr: 1 }} />
                 <Typography
                   variant="h6"
                   sx={{
                     fontWeight: 700,
-                    background: 'linear-gradient(45deg, #1e40af 30%, #3b82f6 90%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
+                    fontSize: '1.5rem',
+                    color: 'green',
                   }}
                 >
-                  Pharmacy Shop
+                  E Tabl
+                  <Box 
+                    component="span" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontWeight: 400,
+                    }}
+                  >
+                    etki
+                  </Box>
                 </Typography>
               </Box>
-              
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 3,
+                ml: 'auto',
+              }}>
                 {menuItems.map((item) => (
                   <Button
                     key={item.path}
                     component={Link}
                     href={item.path}
-                    variant={isActive(item.path) ? 'contained' : 'text'}
-                    color="primary"
+                    color="inherit"
                     sx={{ 
-                      minWidth: 100,
-                      display: { xs: item.path === '/' ? 'none' : 'inline-flex', md: 'inline-flex' },
+                      color: isActive(item.path) ? 'primary.main' : '#64748b',
+                      fontWeight: 500,
                       '&:hover': {
-                        backgroundColor: isActive(item.path) ? 'primary.dark' : 'rgba(30, 64, 175, 0.04)',
+                        color: 'primary.main',
+                        backgroundColor: 'transparent',
                       }
                     }}
                   >
                     {item.label}
                   </Button>
                 ))}
+
+                <Box sx={{ 
+                  position: 'relative',
+                  borderRadius: 2,
+                  bgcolor: alpha('#64748b', 0.05),
+                  '&:hover': {
+                    bgcolor: alpha('#64748b', 0.1),
+                  },
+                  mr: 2,
+                }}>
+                  <IconButton sx={{ p: '10px' }}>
+                    <SearchIcon sx={{ color: '#64748b' }} />
+                  </IconButton>
+                  <InputBase
+                    placeholder="Search..."
+                    sx={{
+                      color: '#64748b',
+                      '& .MuiInputBase-input': {
+                        p: '8px',
+                        transition: 'width 0.2s',
+                        width: '7ch',
+                        '&:focus': {
+                          width: '20ch',
+                        },
+                      },
+                    }}
+                  />
+                </Box>
+
                 <IconButton 
                   onClick={() => setIsCartModalOpen(true)}
-                  color="primary"
                   sx={{ 
-                    ml: 1,
+                    color: '#64748b',
                     '&:hover': {
-                      bgcolor: 'rgba(30, 64, 175, 0.04)',
+                      color: 'primary.main',
+                      bgcolor: 'transparent',
                     }
                   }}
                 >

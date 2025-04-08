@@ -1,7 +1,7 @@
 "use client"
 
 import { Box, Container, Typography, useTheme } from "@mui/material";
-import HeroSection from './components/home/HeroSection';
+import WelcomeSection from './components/home/WelcomeSection';
 import StatsSection from "./components/home/StatsSection";
 import Features from './components/home/Features';
 import TrendingCategories from "./components/home/TrendingCategories";
@@ -15,7 +15,7 @@ export default function Home() {
 
   return (
     <Box>
-      <HeroSection />
+      <WelcomeSection />
       
       <Container maxWidth="lg">
         <Box sx={{ 
