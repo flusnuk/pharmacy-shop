@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Providers from "./components/Providers";
 import { Box } from '@mui/material';
 import Footer from "./components/Footer";
+import CallRequestButton from "./components/CallRequestButton";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function RootLayout({
               {children}
             </Box>
             <Footer />
+            <CallRequestButton />
           </Box>
         </Providers>
       </body>
