@@ -11,13 +11,10 @@ import {
   Button,
   useTheme,
   alpha,
-  Tooltip,
-  Zoom
 } from '@mui/material';
 import { 
   ShoppingCart, 
   Favorite, 
-  LocalOffer,
   NewReleases,
   Verified,
   FavoriteBorder
@@ -55,9 +52,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
-  // Генеруємо випадкові значення для рейтингу та відгуків
-  const randomRating = useMemo(() => (Math.random() * 2 + 3).toFixed(1), []); // від 3.0 до 5.0
-  const randomReviews = useMemo(() => Math.floor(Math.random() * 50) + 10, []); // від 10 до 60
+  const randomRating = useMemo(() => (Math.random() * 2 + 3).toFixed(1), []);
+  const randomReviews = useMemo(() => Math.floor(Math.random() * 50) + 10, []);
 
   const displayRating = product.rating || parseFloat(randomRating);
   const displayReviewsCount = product.reviewsCount || randomReviews;
@@ -66,7 +62,6 @@ export default function ProductCard({ product }: ProductCardProps) {
     "Ліки від болю": { color: "#2196f3", gradient: "linear-gradient(135deg, #2196f3, #21CBF3)" },
     "Антибіотики": { color: "#f44336", gradient: "linear-gradient(135deg, #f44336, #ff7961)" },
     "Вітаміни": { color: "#4caf50", gradient: "linear-gradient(135deg, #4caf50, #80e27e)" },
-
   };
 
   const categoryStyle = categoryColors[product.category.name as keyof typeof categoryColors] || 
@@ -98,28 +93,6 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  const renderAvailabilityStatus = () => {
-    if (!product.isAvailable) {
-      return (
-        <Typography 
-          variant="body2" 
-          sx={{ color: 'error.main', mb: 2, fontWeight: 500 }}
-        >
-          Немає в наявності
-        </Typography>
-      );
-    }
-
-    return (
-      <Typography 
-        variant="body2" 
-        sx={{ color: 'success.main', mb: 2, fontWeight: 500 }}
-      >
-        В наявності
-      </Typography>
-    );
-  };
-
   return (
     <Card
       onMouseEnter={() => setIsHovered(true)}
@@ -129,78 +102,67 @@ export default function ProductCard({ product }: ProductCardProps) {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        borderRadius: 4,
+        borderRadius: '20px',
         overflow: 'hidden',
         transition: 'all 0.3s ease-in-out',
         background: 'white',
-        '&:hover': {
-          transform: 'translateY(-8px)',
-          '&::after': {
-            transform: 'scale(1)'
-          }
-        },
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          height: 4,
-          background: categoryStyle.gradient,
-          transform: 'scale(0)',
-          transition: 'transform 0.3s ease-in-out',
-          transformOrigin: 'center'
-        },
+        border: '1px solid',
+        borderColor: 'rgba(0,0,0,0.08)',
+        boxShadow: isHovered 
+          ? '0 20px 40px rgba(0,0,0,0.12)' 
+          : '0 8px 24px rgba(0,0,0,0.06)',
         opacity: product.isAvailable ? 1 : 0.7,
       }}
     >
-      {/* Badges */}
-      <Box sx={{ position: 'absolute', top: 12, left: 12, zIndex: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {product.isNew && (
-            <Zoom in>
-              <Chip
-                icon={<NewReleases />}
-                label="Новинка"
-                size="small"
-                sx={{
-                  background: categoryStyle.gradient,
-                  color: 'white',
-                  fontWeight: 500,
-                  '& .MuiChip-icon': { color: 'white' }
-                }}
-              />
-            </Zoom>
-          )}
-          {product.discount && (
-            <Zoom in>
-              <Chip
-                icon={<LocalOffer />}
-                label={`-${product.discount}%`}
-                size="small"
-                sx={{
-                  background: `linear-gradient(135deg, ${theme.palette.error.main}, ${theme.palette.error.light})`,
-                  color: 'white',
-                  fontWeight: 500,
-                  '& .MuiChip-icon': { color: 'white' }
-                }}
-              />
-            </Zoom>
-          )}
-          {product.stockQuantity && product.stockQuantity <= 100 && product.isAvailable && (
-            <Zoom in>
-              <Chip
-                label={`Залишилось ${product.stockQuantity} шт.`}
-                size="small"
-                sx={{
-                  background: `linear-gradient(135deg, ${theme.palette.warning.main}, ${theme.palette.warning.light})`,
-                  color: 'white',
-                  fontWeight: 500
-                }}
-              />
-            </Zoom>
-          )}
-        </Box>
+      {/* Category Badge */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16,
+          left: 16,
+          zIndex: 2,
+          display: 'flex',
+          gap: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Chip
+          label={product.category.name}
+          size="small"
+          sx={{
+            background: categoryStyle.gradient,
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '0.75rem',
+            height: '24px',
+            borderRadius: '12px',
+            '& .MuiChip-label': {
+              px: 1.5,
+            },
+          }}
+        />
+        {product.isNew && (
+          <Chip
+            icon={<NewReleases sx={{ fontSize: 16 }} />}
+            label="Новинка"
+            size="small"
+            sx={{
+              background: 'linear-gradient(135deg, #00BFA6, #00897B)',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              height: '24px',
+              borderRadius: '12px',
+              '& .MuiChip-icon': { 
+                color: 'white',
+                fontSize: '16px',
+              },
+              '& .MuiChip-label': {
+                px: 1.5,
+              },
+            }}
+          />
+        )}
       </Box>
 
       {/* Favorite Button */}
@@ -208,179 +170,206 @@ export default function ProductCard({ product }: ProductCardProps) {
         onClick={() => setIsFavorite(!isFavorite)}
         sx={{
           position: 'absolute',
-          top: 12,
-          right: 12,
+          top: 16,
+          right: 16,
           zIndex: 2,
           bgcolor: 'white',
-          boxShadow: 2,
+          width: 36,
+          height: 36,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           transition: 'all 0.2s ease',
           '&:hover': {
             bgcolor: 'white',
-            transform: 'scale(1.1)',
-            color: theme.palette.error.main
-          }
+            transform: 'scale(1.1) rotate(8deg)',
+            color: theme.palette.error.main,
+          },
         }}
       >
         {isFavorite ? <Favorite color="error" /> : <FavoriteBorder />}
       </IconButton>
 
       {/* Image Container */}
-      <Box sx={{ 
-        position: 'relative', 
-        pt: '100%',
-        overflow: 'hidden'
-      }}>
+      <Box 
+        sx={{ 
+          position: 'relative',
+          pt: '75%', // 4:3 aspect ratio
+          overflow: 'hidden',
+          background: alpha(categoryStyle.color, 0.03),
+        }}
+      >
         <Image
           src={product.imageUrl || '/images/default-medicine.jpg'}
           alt={product.name}
           fill
           className="product-image"
           style={{
-            objectFit: 'cover',
-            transition: 'transform 0.6s ease-in-out'
+            objectFit: 'contain',
+            padding: '20px',
+            transition: 'all 0.6s ease-in-out',
+            transform: isHovered ? 'scale(1.1)' : 'scale(1)',
           }}
         />
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: isHovered ? `linear-gradient(to top, ${alpha(categoryStyle.color, 0.1)}, transparent)` : 'transparent',
-            transition: 'background 0.3s ease'
-          }}
-        />
-      </Box>
-
-      <CardContent sx={{ flexGrow: 1, p: 3 }}>
-        {/* Category with Icon */}
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 1,
-            mb: 1,
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 2,
-            background: alpha(categoryStyle.color, 0.1),
-          }}
-        >
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              color: categoryStyle.color,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-              fontWeight: 500
+        {product.discount && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 16,
+              left: 16,
+              background: 'linear-gradient(135deg, #f44336, #ff7961)',
+              color: 'white',
+              py: 0.5,
+              px: 1.5,
+              borderRadius: '12px',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              boxShadow: '0 4px 12px rgba(244, 67, 54, 0.3)',
             }}
           >
-            {product.category.name}
-          </Typography>
-        </Box>
+            -{product.discount}%
+          </Box>
+        )}
+      </Box>
 
-        {/* Title */}
-        <Typography 
-          variant="h6" 
-          gutterBottom
-          sx={{
-            fontSize: '1.1rem',
-            fontWeight: 'bold',
-            minHeight: 50,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            transition: 'color 0.3s ease',
-            color: isHovered ? categoryStyle.color : 'inherit'
-          }}
-        >
-          {product.name}
-        </Typography>
-
-        {/* Availability Status */}
-        {renderAvailabilityStatus()}
-
-        {/* Rating */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Rating 
-            value={displayRating}
-            readOnly 
-            size="small"
-            precision={0.1}
+      {/* Content */}
+      <CardContent sx={{ 
+        flexGrow: 1, 
+        display: 'flex', 
+        flexDirection: 'column',
+        gap: 1.5,
+        p: 2.5,
+      }}>
+        {/* Title and Rating */}
+        <Box>
+          <Typography
+            variant="h6"
             sx={{
-              '& .MuiRating-iconFilled': {
-                color: categoryStyle.color
-              }
+              fontSize: '1rem',
+              fontWeight: 600,
+              mb: 1,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              lineHeight: 1.4,
+              minHeight: '2.8em',
             }}
-          />
-          <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-            ({displayReviewsCount})
+          >
+            {product.name}
           </Typography>
-          {product.verified && (
-            <Tooltip title="Сертифікований товар" arrow>
-              <Verified sx={{ ml: 1, color: categoryStyle.color, fontSize: 20 }} />
-            </Tooltip>
-          )}
-        </Box>
-
-        {/* Price */}
-        <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2 }}>
-          {product.discount ? (
-            <>
-              <Typography
-                variant="h6"
-                sx={{ 
-                  fontWeight: 'bold',
-                  mr: 1,
-                  color: theme.palette.error.main
-                }}
-              >
-                {product.discountPrice} ₴
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ textDecoration: 'line-through' }}
-              >
-                {product.price} ₴
-              </Typography>
-            </>
-          ) : (
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                fontWeight: 'bold',
-                color: categoryStyle.color
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Rating value={displayRating} precision={0.5} size="small" readOnly />
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.75rem',
               }}
             >
-              {product.price} ₴
+              ({displayReviewsCount})
             </Typography>
-          )}
+          </Box>
         </Box>
 
-        {/* Updated Add to Cart Button */}
+        {/* Manufacturer */}
+        {product.manufacturer && (
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              fontSize: '0.875rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+            }}
+          >
+            <Verified sx={{ fontSize: 16, color: theme.palette.primary.main }} />
+            {product.manufacturer}
+          </Typography>
+        )}
+
+        {/* Price and Stock */}
+        <Box sx={{ mt: 'auto' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'baseline', 
+            gap: 1,
+            mb: 1,
+          }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                color: product.discount ? 'error.main' : 'text.primary',
+              }}
+            >
+              {product.discount 
+                ? (Number(product.price) * (1 - Number(product.discount) / 100)).toFixed(2)
+                : Number(product.price).toFixed(2)} ₴
+            </Typography>
+            {product.discount && (
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: 'line-through',
+                  color: 'text.secondary',
+                }}
+              >
+                {Number(product.price).toFixed(2)} ₴
+              </Typography>
+            )}
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: product.isAvailable ? 'success.main' : 'error.main',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+              }}
+            >
+              {product.isAvailable ? 'В наявності' : 'Немає в наявності'}
+            </Typography>
+            {product.stockQuantity && product.stockQuantity <= 100 && product.isAvailable && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'warning.main',
+                  fontSize: '0.75rem',
+                }}
+              >
+                (залишилось {product.stockQuantity} шт.)
+              </Typography>
+            )}
+          </Box>
+        </Box>
+
+        {/* Add to Cart Button */}
         <Button
           variant="contained"
-          fullWidth
           startIcon={<ShoppingCart />}
-          disabled={!product.isAvailable || isAdding}
           onClick={handleAddToCart}
+          disabled={!product.isAvailable || isAdding}
           sx={{
-            background: product.isAvailable ? categoryStyle.gradient : 'grey.300',
-            borderRadius: 2,
-            py: 1,
-            transition: 'all 0.3s ease',
+            mt: 2,
+            borderRadius: '12px',
+            textTransform: 'none',
+            fontWeight: 600,
+            background: product.isAvailable ? categoryStyle.gradient : undefined,
+            boxShadow: product.isAvailable 
+              ? '0 4px 12px rgba(0,0,0,0.1)' 
+              : undefined,
             '&:hover': {
-              background: product.isAvailable ? categoryStyle.gradient : 'grey.300',
-              transform: product.isAvailable ? 'translateY(-2px)' : 'none',
-              boxShadow: product.isAvailable ? `0 8px 20px ${alpha(categoryStyle.color, 0.4)}` : 'none'
-            }
+              background: product.isAvailable ? categoryStyle.gradient : undefined,
+              filter: 'brightness(1.1)',
+              transform: 'translateY(-2px)',
+            },
           }}
         >
-          {isAdding ? 'Додається...' : product.isAvailable ? 'До кошика' : 'Немає в наявності'}
+          {isAdding ? 'Додається...' : 'Додати в кошик'}
         </Button>
       </CardContent>
     </Card>
