@@ -69,3 +69,13 @@ model Medicine {
 
   @@map("medicines")
 }
+
+model CallRequest {
+  id        Int      @id @default(autoincrement())
+  phone     String
+  status    String   @default("pending") // pending, called, failed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("call_requests")
+}
