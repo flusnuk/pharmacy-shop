@@ -18,7 +18,7 @@ import {
   FormControl,
   RadioGroup,
   FormControlLabel,
-  Radio,
+  Radio
 } from '@mui/material';
 import { 
   Delete as DeleteIcon, 
@@ -30,8 +30,7 @@ import {
   ShoppingCart,
   Info,
   ArrowBack,
-  LocationOn,
-  Person
+  LocationOn
 } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { CartItem } from '../types/types';
@@ -41,6 +40,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import OrderSuccessModal from '../components/OrderSuccessModal';
 import { getImageUrl } from '../utils/imageUtils';
+import { orderService } from '../services/orderService';
 
 const DELIVERY_COST = 140;
 const FREE_DELIVERY_THRESHOLD = 1000;
@@ -51,6 +51,7 @@ interface DeliveryForm {
   firstName: string;
   lastName: string;
   phone: string;
+  email: string;
   city: string;
   deliveryType: 'nova' | 'ukrposhta' | 'address';
   department: string;
@@ -68,6 +69,7 @@ const initialDeliveryForm: DeliveryForm = {
   firstName: '',
   lastName: '',
   phone: '',
+  email: '',
   city: '',
   deliveryType: 'nova',
   department: '',
@@ -127,10 +129,13 @@ export default function CartPage() {
   };
 
   const isDeliveryFormValid = () => {
-    const { firstName, lastName, phone, city, deliveryType, department, address } = deliveryForm;
-    if (!firstName || !lastName || !phone || !city) return false;
+    const { firstName, lastName, phone, email, city, deliveryType, department, address } = deliveryForm;
+    if (!firstName || !lastName || !phone || !email || !city) return false;
     if (deliveryType === 'address' && !address) return false;
     if (deliveryType !== 'address' && !department) return false;
+    // Базова валідація email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return false;
     return true;
   };
 
@@ -142,13 +147,33 @@ export default function CartPage() {
     return true;
   };
 
-  const handleOrderConfirm = () => {
-    const newOrderNumber = Math.random().toString(36).substr(2, 9).toUpperCase();
-    setOrderNumber(newOrderNumber);
-    
-    cartService.clearCart();
-    
-    setIsSuccessModalOpen(true);
+  const handleOrderConfirm = async () => {
+    try {
+      const orderData = {
+        totalAmount: totalPrice,
+        status: 'pending',
+        deliveryAddress: deliveryForm.deliveryType === 'address' 
+          ? deliveryForm.address 
+          : `${deliveryForm.city}, ${deliveryForm.department}`,
+        paymentStatus: paymentForm.method === 'card' ? 'paid' : 'pending',
+        deliveryType: deliveryForm.deliveryType,
+        paymentType: paymentForm.method,
+        trackingNumber: '',
+        firstName: deliveryForm.firstName,
+        lastName: deliveryForm.lastName,
+        phone: deliveryForm.phone,
+        email: deliveryForm.email,
+        userId: null
+      };
+
+      const newOrder = await orderService.createOrder(orderData);
+      setOrderNumber(newOrder.id.toString());
+      cartService.clearCart();
+      setIsSuccessModalOpen(true);
+    } catch (error) {
+      console.error('Error creating order:', error);
+      // Тут можна додати відображення помилки користувачу
+    }
   };
 
   const renderDeliveryStep = () => (
@@ -157,16 +182,15 @@ export default function CartPage() {
         <Paper sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <LocalShipping color="primary" />
-            Інформація про доставку
+            Доставка
           </Typography>
           <Divider sx={{ my: 2 }} />
-
+          
           <Stack spacing={3}>
-            {/* Personal Information */}
+            {/* Contact Information */}
             <Box>
-              <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Person fontSize="small" />
-                Особисті дані
+              <Typography variant="subtitle1" gutterBottom>
+                Контактна інформація
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -187,14 +211,24 @@ export default function CartPage() {
                     required
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Номер телефону"
+                    label="Телефон"
                     value={deliveryForm.phone}
                     onChange={handleDeliveryFormChange('phone')}
                     required
-                    placeholder="+380"
+                    placeholder="+38"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    type="email"
+                    value={deliveryForm.email}
+                    onChange={handleDeliveryFormChange('email')}
+                    required
                   />
                 </Grid>
               </Grid>

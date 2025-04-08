@@ -1,15 +1,12 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const ordersPath = path.join(process.cwd(), 'data', 'orders.json');
-    const data = await fs.readFile(ordersPath, 'utf8');
-    const orders = JSON.parse(data);
-    
+    const orders = await prisma.order.findMany();
     return NextResponse.json(orders);
   } catch (error) {
+    console.error('Error loading orders:', error);
     return NextResponse.json(
       { error: 'Failed to load orders' },
       { status: 500 }
@@ -19,22 +16,28 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const ordersPath = path.join(process.cwd(), 'data', 'orders.json');
-    const data = await fs.readFile(ordersPath, 'utf8');
-    const { orders } = JSON.parse(data);
-    
     const orderData = await request.json();
-    const newOrder = {
-      ...orderData,
-      id: `ORDER${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      date: new Date().toISOString()
-    };
     
-    orders.push(newOrder);
-    await fs.writeFile(ordersPath, JSON.stringify({ orders }, null, 2));
+    const newOrder = await prisma.order.create({
+      data: {
+        totalAmount: orderData.totalAmount,
+        status: orderData.status,
+        deliveryAddress: orderData.deliveryAddress,
+        paymentStatus: orderData.paymentStatus,
+        deliveryType: orderData.deliveryType,
+        paymentType: orderData.paymentType,
+        trackingNumber: orderData.trackingNumber || '',
+        firstName: orderData.firstName,
+        lastName: orderData.lastName,
+        phone: orderData.phone,
+        email: orderData.email || null,
+        userId: orderData.userId || null
+      },
+    });
     
     return NextResponse.json(newOrder);
   } catch (error) {
+    console.error('Error creating order:', error);
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }

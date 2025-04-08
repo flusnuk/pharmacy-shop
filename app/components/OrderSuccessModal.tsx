@@ -67,7 +67,7 @@ export default function OrderSuccessModal({ open, onClose, orderNumber }: OrderS
               mb: 3
             }}
           >
-            #{orderNumber}
+            №{orderNumber}
           </Typography>
 
           <Typography color="text.secondary" sx={{ mb: 4 }}>
@@ -80,7 +80,7 @@ export default function OrderSuccessModal({ open, onClose, orderNumber }: OrderS
               variant="contained"
               size="large"
               startIcon={<ShoppingBag />}
-              onClick={() => router.push('/orders')}
+              onClick={() => router.push('/')}
               sx={{
                 py: 1.5,
                 bgcolor: 'primary.main',
