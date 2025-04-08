@@ -24,10 +24,22 @@ interface MedicineCardProps {
 
 export default function MedicineCard({ medicine }: MedicineCardProps) {
   const [isAdding, setIsAdding] = useState(false);
+  const [isValidImage, setIsValidImage] = useState(true);
 
   const formatPrice = (price: number | string) => {
     return Number(price).toFixed(2)
   }
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  const imageUrl = medicine.imageUrl && isValidUrl(medicine.imageUrl) ? medicine.imageUrl : null;
 
   const handleAddToCart = () => {
     setIsAdding(true);
@@ -68,23 +80,50 @@ export default function MedicineCard({ medicine }: MedicineCardProps) {
           borderBottom: '1px solid',
           borderColor: 'divider'
         }}>
-          <CardMedia
-            component="img"
-            image={medicine.imageUrl || '/images/medicine-placeholder.jpg'}
-            alt={medicine.name}
-            sx={{ 
-              height: '80%',
-              width: 'auto',
-              maxWidth: '80%',
-              objectFit: 'contain',
-              transition: 'transform 0.3s ease',
-              filter: !medicine.isAvailable ? 'grayscale(100%)' : 'none',
-              opacity: !medicine.isAvailable ? 0.7 : 1,
-              '&:hover': {
-                transform: 'scale(1.05)'
-              }
-            }}
-          />
+          {imageUrl && isValidImage ? (
+            <CardMedia
+              component="img"
+              image={imageUrl}
+              alt={medicine.name}
+              sx={{ 
+                height: '80%',
+                width: 'auto',
+                maxWidth: '80%',
+                objectFit: 'contain',
+                transition: 'transform 0.3s ease',
+                filter: !medicine.isAvailable ? 'grayscale(100%)' : 'none',
+                opacity: !medicine.isAvailable ? 0.7 : 1,
+                '&:hover': {
+                  transform: 'scale(1.05)'
+                }
+              }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                setIsValidImage(false);
+                (target.parentElement?.querySelector('.no-image-text') as HTMLElement).style.display = 'block';
+              }}
+            />
+          ) : (
+            <Typography
+              className="no-image-text"
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{
+                padding: 2,
+                userSelect: 'none',
+                display: 'block',
+                backgroundColor: '#f5f5f5',
+                width: '100%',
+                height: '100%',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              Фотографія недоступна
+            </Typography>
+          )}
         </Box>
 
         <IconButton 
